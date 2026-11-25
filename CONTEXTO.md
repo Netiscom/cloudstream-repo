@@ -16,8 +16,11 @@ Compila y genera el plugin:
 
 - `./gradlew AresHD:make` → `AresHD/build/AresHD.cs3` (versión 2).
 - Última verificación: BUILD SUCCESSFUL.
-- **Sin commitear**: `README.md`, `build.gradle.kts`, `settings.gradle.kts` modificados; `AresHD/` y `repo.json` sin trackear (rama `master`).
-- El remoto configurado sigue siendo la plantilla `https://github.com/recloudstream/TestPlugins.git`.
+- Publicado en **`Netiscom/cloudstream-repo`** (público): rama `main` con el código y rama `builds` con el `.cs3` y `plugins.json` que genera el workflow.
+- URL para añadir el repositorio en Cloudstream: `https://raw.githubusercontent.com/Netiscom/cloudstream-repo/main/repo.json`.
+- Remotos: `origin` → `Netiscom/cloudstream-repo`; `upstream` → plantilla `recloudstream/TestPlugins`.
+- Workflow `.github/workflows/build.yml` corregido (setup-java v4, setup-android v3 con paquetes explícitos, `permissions: contents: write`). Última ejecución en verde y el SHA-256 del `.cs3` publicado coincide con el build local.
+- La identidad de git está configurada **solo en este repo** (`Netiscom` + noreply de GitHub).
 
 ## Cómo compilar (Windows, bash/Git Bash)
 
@@ -88,8 +91,8 @@ Decisiones de implementación:
 
 1. Probar en dispositivo: instalar el `.cs3` y resolver VoE/Dood/StreamWish de verdad.
 2. Emitir los subtítulos del campo `captions` del config de VoE (hoy no se usan).
-3. ~~Placeholders~~ **Hecho**: `setRepo` y `repo.json` apuntan a `Netiscom/cloudstream-repo`. Falta crear ese repo en GitHub y la rama `builds` para que el workflow publique.
-4. Considerar commit del trabajo actual (build reparado + paridad de enlaces + VoE altcha).
+3. ~~Placeholders y publicación~~ **Hecho**: `setRepo` y `repo.json` apuntan a `Netiscom/cloudstream-repo`, con ramas `main`/`builds` y workflow en verde.
+4. ~~Commit~~ **Hecho**: el trabajo está commiteado y publicado en `main`.
 
 ## Limitaciones conocidas
 
