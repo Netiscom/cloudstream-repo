@@ -1,5 +1,5 @@
 // Use an integer for version numbers
-version = 3
+version = 4
 
 cloudstream {
     description = "Películas y series en Castellano, Latino y VOSE desde AresHD."

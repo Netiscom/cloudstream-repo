@@ -14,7 +14,7 @@ Repositorio de extensiones para **Cloudstream 3** que reimplementa el addon de K
 
 Compila y genera el plugin:
 
-- `./gradlew AresHD:make` → `AresHD/build/AresHD.cs3` (versión 3).
+- `./gradlew AresHD:make` → `AresHD/build/AresHD.cs3` (versión 4).
 - Última verificación: BUILD SUCCESSFUL.
 - Ojo: `make` **no** regenera `build/plugins.json`; para el listado hay que correr `./gradlew makePluginsJson`.
 - Publicado en **`Netiscom/cloudstream-repo`** (público): rama `main` con el código y rama `builds` con el `.cs3` y `plugins.json` que genera el workflow.
@@ -49,7 +49,7 @@ Otros targets: `AresHD:deployWithAdb`, `makePluginsJson`.
 | `AresHD/src/main/kotlin/com/kodi/cloudstream/AresHD.kt` | Scraper principal: home, búsqueda, géneros, películas/series/episodios y `loadLinks`. |
 | `AresHD/src/main/kotlin/com/kodi/cloudstream/VoeAltcha.kt` | Extractor VoE con puerta altcha (PBKDF2/SHA-256) y descifrado del config. |
 | `AresHD/src/main/kotlin/com/kodi/cloudstream/AresHDPlugin.kt` | Registro de providers y extractores. |
-| `AresHD/build.gradle.kts` | `version = 3`, tipos `Movie`/`TvSeries`, idioma `es`. |
+| `AresHD/build.gradle.kts` | `version = 4`, tipos `Movie`/`TvSeries`, idioma `es`. |
 | `repo.json` | Manifiesto del repositorio para Cloudstream. |
 
 ## AresHD.kt
@@ -82,6 +82,7 @@ Decisiones de implementación:
 - PBKDF2 hecho a mano ≈ 29.8 ms/intento en JVM, así que el PoW se resuelve **en paralelo** (4 hilos, `ExecutorService`, presupuesto ~20 s). Medido en vivo: 0.9–3.5 s por challenge.
 - Se comprobó paridad exacta con la implementación de referencia: mismo `counter`, mismo `derivedKey` (`5ec02b91…0522b`), mismo `source` tras descifrar.
 - `AresHDPlugin.kt` registra `VoeAltcha()` y sus mirrors; se eliminaron los antiguos `VoeMirrorCasey`/`VoeMirrorMorencius` y el import de `Voe`.
+- Subtítulos: el reproductor del espejo (`/js/loader*.js`) recorre `sources[0].captions` y exige `file` en cada entrada, añadiendo `kind` (`"captions"` por defecto) y `default`. `VoeCaption` acepta `file`/`url` y etiqueta en `label`/`language`/`lang`; se ignoran `kind` distintos de `captions`/`subtitles` y se resuelven las rutas relativas contra el origen del espejo.
 
 ## Cómo se validó (sin dispositivo Android)
 
@@ -92,7 +93,7 @@ Decisiones de implementación:
 ## Pendiente / próximos pasos
 
 1. Probar en dispositivo: instalar el `.cs3` y resolver VoE/Dood/StreamWish de verdad.
-2. Emitir los subtítulos del campo `captions` del config de VoE (hoy no se usan).
+2. ~~Subtítulos de VoE~~ **Hecho** en v4: `emitSubtitles()` lee `captions` del config. Ojo: en 16 vídeos muestreados el campo venía vacío (`[]`), así que el camino con datos reales está sin verificar.
 3. ~~Placeholders y publicación~~ **Hecho**: `setRepo` y `repo.json` apuntan a `Netiscom/cloudstream-repo`, con ramas `main`/`builds` y workflow en verde.
 4. ~~Commit~~ **Hecho**: el trabajo está commiteado y publicado en `main`.
 

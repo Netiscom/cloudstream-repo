@@ -5,6 +5,7 @@ import com.lagradost.cloudstream3.SubtitleFile
 import com.lagradost.cloudstream3.app
 import com.lagradost.cloudstream3.base64Decode
 import com.lagradost.cloudstream3.base64Encode
+import com.lagradost.cloudstream3.newSubtitleFile
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.AppUtils.toJson
 import com.lagradost.cloudstream3.utils.ExtractorApi
@@ -63,6 +64,8 @@ open class VoeAltcha : ExtractorApi() {
         }
 
         val config = extractConfig(doc) ?: return
+
+        emitSubtitles(config.captions, pageUrl, subtitleCallback)
 
         config.source?.takeIf { it.startsWith("http") }?.let { source ->
             callback(link(source, pageUrl, ExtractorLinkType.M3U8, name))
@@ -242,6 +245,40 @@ open class VoeAltcha : ExtractorApi() {
         parseJson<VoeConfig>(inner)
     }.getOrNull()
 
+    /**
+     * El reproductor del espejo recorre `sources[0].captions` y exige `file` en cada entrada,
+     * añadiendo `kind` ("captions") y `default`. Se aceptan también `url`/`label`/`language`
+     * por si el formato cambia entre espejos.
+     */
+    private suspend fun emitSubtitles(
+        captions: List<VoeCaption>?,
+        pageUrl: String,
+        subtitleCallback: (SubtitleFile) -> Unit
+    ) {
+        if (captions.isNullOrEmpty()) return
+        val origin = originOf(pageUrl)
+        val seen = HashSet<String>()
+        for (caption in captions) {
+            val raw = caption.file ?: caption.url
+            if (raw.isNullOrBlank()) continue
+
+            val kind = caption.kind?.trim()?.lowercase()
+            if (!kind.isNullOrEmpty() && kind != "captions" && kind != "subtitles") continue
+
+            val url = if (raw.startsWith("http", ignoreCase = true)) {
+                raw.trim()
+            } else {
+                "$origin/${raw.trim().trimStart('/')}"
+            }
+            if (!seen.add(url)) continue
+
+            val label = sequenceOf(caption.label, caption.language, caption.lang)
+                .mapNotNull { it?.trim()?.takeIf(String::isNotEmpty) }
+                .firstOrNull() ?: "Subtítulo"
+            subtitleCallback(newSubtitleFile(label, url))
+        }
+    }
+
     private suspend fun link(
         url: String,
         referer: String,
@@ -308,6 +345,16 @@ open class VoeAltcha : ExtractorApi() {
     private data class VoeConfig(
         @JsonProperty("source") val source: String? = null,
         @JsonProperty("direct_access_url") val directAccessUrl: String? = null,
+        @JsonProperty("captions") val captions: List<VoeCaption>? = null,
+    )
+
+    private data class VoeCaption(
+        @JsonProperty("file") val file: String? = null,
+        @JsonProperty("url") val url: String? = null,
+        @JsonProperty("label") val label: String? = null,
+        @JsonProperty("language") val language: String? = null,
+        @JsonProperty("lang") val lang: String? = null,
+        @JsonProperty("kind") val kind: String? = null,
     )
 
     companion object {
