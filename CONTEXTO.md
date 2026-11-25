@@ -21,6 +21,7 @@ Compila y genera el plugin:
 - URL para añadir el repositorio en Cloudstream: `https://raw.githubusercontent.com/Netiscom/cloudstream-repo/main/repo.json`.
 - Remotos: `origin` → `Netiscom/cloudstream-repo`; `upstream` → plantilla `recloudstream/TestPlugins`.
 - Workflow `.github/workflows/build.yml` corregido (setup-java v4, setup-android v3 con paquetes explícitos, `permissions: contents: write`). Última ejecución en verde y el SHA-256 del `.cs3` publicado coincide con el build local.
+- El workflow también se puede lanzar a mano: `gh workflow run Build -R Netiscom/cloudstream-repo --ref main`. Hace falta porque GitHub a veces no crea el run al hacer push (incidente del 25/11 o `workflow_dispatch` con HTTP 500); si el paso **Push builds** falla con `Internal Server Error`, se relanza y listo.
 - La identidad de git está configurada **solo en este repo** (`Netiscom` + noreply de GitHub).
 
 ## Cómo compilar (Windows, bash/Git Bash)
