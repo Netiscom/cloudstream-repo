@@ -1,0 +1,8 @@
+{
+  "name": "Kodi Scrapers (Cloudstream)",
+  "description": "Repositorio de extensiones para Cloudstream adaptadas desde addons de Kodi.",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/Netiscom/cloudstream-repo/builds/plugins.json"
+  ]
+}

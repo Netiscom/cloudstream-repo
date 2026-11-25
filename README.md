@@ -1,58 +1,33 @@
-**⚠️ This is currently under development, dont use it yet if you're not comfortable with constantly merging new changes**
+# Cloudstream Repo (Kodi Scrapers)
 
-# `Cloudstream3 Plugin Repo Template`
+Repositorio de extensiones para **Cloudstream 3** adaptado a partir de los canales de Kodi (`canales/`).
 
-Template for a [Cloudstream3](https://github.com/recloudstream) plugin repo
+## Canales incluidos
 
-**⚠️ Make sure you check "Include all branches" when using this template**
+- **AresHD** (`AresHD/`): Películas, series, búsqueda, géneros y resolución de enlaces vía `#__NEXT_DATA__` + `player.areshd.com` + extractores integrados de Cloudstream (`Voe`, `Dood`, `StreamWish`, `VidHide`, `Vidara`).
+- **VoE con altcha** (`VoeAltcha.kt`): los espejos de VoE (voe.sx, caseyemavoid.com, morencius.com) sirven una verificación «Confirm you're human» con challenge altcha (PBKDF2/SHA-256). El extractor resuelve el proof-of-work en paralelo y descifra el config ofuscado, igual que el addon de Kodi.
 
- 
-## Getting started with writing your first plugin
+## Cómo compilar localmente (Windows)
 
-This template includes 1 example plugin.
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Android\openjdk\jdk-21.0.8"
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+.\gradlew.bat AresHD:make
+```
 
-1. Open the root build.gradle.kts, read the comments and replace all the placeholders
-2. Familiarize yourself with the project structure. Most files are commented
-3. Build or deploy your first plugin using:
-   - Windows: `.\gradlew.bat ExampleProvider:make` or `.\gradlew.bat ExampleProvider:deployWithAdb`
-   - Linux & Mac: `./gradlew ExampleProvider:make` or `./gradlew ExampleProvider:deployWithAdb`
+El archivo compilado `.cs3` se generará en `AresHD\build\AresHD.cs3` (y también puedes generar `build\plugins.json` con `.\gradlew.bat make makePluginsJson`).
 
+Para instalarlo directamente por ADB en un dispositivo conectado:
 
-## Granting All Files Access on Newer Android Devices
+```powershell
+.\gradlew.bat AresHD:deployWithAdb
+```
 
-For local plugin testing, you need to grant the app "All Files Access" on newer Android devices (Android 11 and above). Here’s how to do it:
+## Cómo publicarlo en GitHub para Cloudstream
 
-### Using ADB
-
-* `adb shell appops set --uid PACKAGE_NAME MANAGE_EXTERNAL_STORAGE allow`
-* Replace `PACKAGE_NAME` with the name of the package for the Cloudstream3 version you are using:
-   - debug: `com.lagradost.cloudstream3.prerelease.debug`
-   - prerelease: `com.lagradost.cloudstream3.prerelease`
-   - stable: `com.lagradost.cloudstream3`
-
-### Manually
-
-1. **Open Settings**: Go to your device’s Settings menu.
-
-2. **Navigate to Special Access**:
-   - Tap on "Apps & notifications" or "Apps".
-   - Select "Special app access" or "Special access".
-
-3. **Select All Files Access**:
-   - Tap on "All files access".
-   - It may be under the three vertical dots menu towards the top of the screen.
-
-4. **Grant Access to the App**: Find the app in the list and tap on it to toggle it, if it is not already enabled.
-
-6. **Restart the App**: Close and reopen the app to apply the changes.
-
-
-## License
-
-Everything in this repo is released into the public domain. You may use it however you want with no conditions whatsoever
-
-
-## Attribution
-
-This template as well as the gradle plugin and the whole plugin system is **heavily** based on [Aliucord](https://github.com/Aliucord).
-*Go use it, it's a great mobile discord client mod!*
+1. Sube este proyecto a `Netiscom/cloudstream-repo` y crea una rama vacía llamada `builds` (o deja que el workflow la use después de crearla una vez).
+2. Ya está configurado para `Netiscom/cloudstream-repo` en `build.gradle.kts` (`setRepo`) y `repo.json` (`pluginLists`). Si lo mueves a otro repositorio, actualiza ambos.
+3. En GitHub: **Settings → Actions → General → Workflow permissions → Read and write permissions**.
+4. Cada push a `main` o `master` ejecutará `.github/workflows/build.yml` y publicará los `.cs3` y `plugins.json` en la rama `builds`.
+5. En Cloudstream: **Ajustes → Extensiones → Añadir repositorio** y pega la URL raw de `repo.json`:
+   `https://raw.githubusercontent.com/Netiscom/cloudstream-repo/main/repo.json`
