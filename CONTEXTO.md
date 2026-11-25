@@ -19,6 +19,7 @@ Compila y genera el plugin:
 - Ojo: `make` **no** regenera `build/plugins.json`; para el listado hay que correr `./gradlew makePluginsJson`.
 - Publicado en **`Netiscom/cloudstream-repo`** (público): rama `main` con el código y rama `builds` con el `.cs3` y `plugins.json` que genera el workflow.
 - URL para añadir el repositorio en Cloudstream: `https://raw.githubusercontent.com/Netiscom/cloudstream-repo/main/repo.json`.
+- Guía de instalación añadida al `README.md` y subida a `main` (commit `60d6b9a`); como solo toca documentación, no disparó build y la rama `builds` sigue en v4 (`83fa54d`).
 - Remotos: `origin` → `Netiscom/cloudstream-repo`; `upstream` → plantilla `recloudstream/TestPlugins`.
 - Workflow `.github/workflows/build.yml` corregido (setup-java v4, setup-android v3 con paquetes explícitos, `permissions: contents: write`). Última ejecución en verde y el SHA-256 del `.cs3` publicado coincide con el build local.
 - El workflow también se puede lanzar a mano: `gh workflow run Build -R Netiscom/cloudstream-repo --ref main`. Hace falta porque GitHub a veces no crea el run al hacer push (incidente del 25/11 o `workflow_dispatch` con HTTP 500); si el paso **Push builds** falla con `Internal Server Error`, se relanza y listo.
