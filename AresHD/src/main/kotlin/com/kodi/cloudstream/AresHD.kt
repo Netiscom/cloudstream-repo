@@ -95,7 +95,7 @@ class AresHD : MainAPI() {
                 this.year = extractYear(movie.releaseDate)
                 this.plot = movie.overview
                 this.duration = movie.runtime
-                this.tags = movie.genres?.mapNotNull { it.name?.trim()?.takeIf(String::isNotEmpty) }
+                this.tags = movieTags(movie)
                 this.score = Score.from10(movie.rate?.average)
                 val actors = movie.cast?.acting?.mapNotNull { it.name?.trim()?.takeIf(String::isNotEmpty) }.orEmpty()
                 if (actors.isNotEmpty()) addActors(actors)
@@ -141,6 +141,7 @@ class AresHD : MainAPI() {
                 this.posterUrl = ep.image
                 this.plot = ep.overview ?: props.serie?.overview
                 this.year = extractYear(ep.releaseDate)
+                this.tags = availableLanguages(ep.videos).takeIf { it.isNotEmpty() }
             }
         }
 
@@ -233,6 +234,30 @@ class AresHD : MainAPI() {
                 ?.trim()
                 ?.takeIf { it.startsWith("http", ignoreCase = true) }
         }.getOrNull()
+    }
+
+    private fun movieTags(movie: MediaDetail): List<String>? {
+        val tags = movie.genres
+            ?.mapNotNull { it.name?.trim()?.takeIf(String::isNotEmpty) }
+            .orEmpty() + availableLanguages(movie.videos)
+        return tags.takeIf { it.isNotEmpty() }
+    }
+
+    /**
+     * Idiomas con al menos un servidor utilizable. El sitio lista la clave del idioma
+     * aunque no tenga enlaces, así que se descartan las que llegan vacías.
+     */
+    private fun availableLanguages(videos: Map<String, List<VideoOption>>?): List<String> {
+        if (videos.isNullOrEmpty()) return emptyList()
+        return videos.entries
+            .filter { (_, options) ->
+                options.any { option ->
+                    val link = option.result?.trim().orEmpty()
+                    link.isNotEmpty() && option.cyberlocker?.trim()?.lowercase().orEmpty() !in SKIP_SERVERS
+                }
+            }
+            .mapNotNull { (key, _) -> languageLabel(key) }
+            .distinct()
     }
 
     private fun languageLabel(key: String?): String? {

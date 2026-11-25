@@ -14,8 +14,9 @@ Repositorio de extensiones para **Cloudstream 3** que reimplementa el addon de K
 
 Compila y genera el plugin:
 
-- `./gradlew AresHD:make` → `AresHD/build/AresHD.cs3` (versión 2).
+- `./gradlew AresHD:make` → `AresHD/build/AresHD.cs3` (versión 3).
 - Última verificación: BUILD SUCCESSFUL.
+- Ojo: `make` **no** regenera `build/plugins.json`; para el listado hay que correr `./gradlew makePluginsJson`.
 - Publicado en **`Netiscom/cloudstream-repo`** (público): rama `main` con el código y rama `builds` con el `.cs3` y `plugins.json` que genera el workflow.
 - URL para añadir el repositorio en Cloudstream: `https://raw.githubusercontent.com/Netiscom/cloudstream-repo/main/repo.json`.
 - Remotos: `origin` → `Netiscom/cloudstream-repo`; `upstream` → plantilla `recloudstream/TestPlugins`.
@@ -48,7 +49,7 @@ Otros targets: `AresHD:deployWithAdb`, `makePluginsJson`.
 | `AresHD/src/main/kotlin/com/kodi/cloudstream/AresHD.kt` | Scraper principal: home, búsqueda, géneros, películas/series/episodios y `loadLinks`. |
 | `AresHD/src/main/kotlin/com/kodi/cloudstream/VoeAltcha.kt` | Extractor VoE con puerta altcha (PBKDF2/SHA-256) y descifrado del config. |
 | `AresHD/src/main/kotlin/com/kodi/cloudstream/AresHDPlugin.kt` | Registro de providers y extractores. |
-| `AresHD/build.gradle.kts` | `version = 2`, tipos `Movie`/`TvSeries`, idioma `es`. |
+| `AresHD/build.gradle.kts` | `version = 3`, tipos `Movie`/`TvSeries`, idioma `es`. |
 | `repo.json` | Manifiesto del repositorio para Cloudstream. |
 
 ## AresHD.kt
@@ -60,6 +61,7 @@ Otros targets: `AresHD:deployWithAdb`, `makePluginsJson`.
   - `qualityValue()`: `FULL_HD`→P1080, `HD`→P720, etc. (`Qualities` del jar: `Unknown, P144…P2160`).
   - `withLanguage()` / `withFallbackQuality()` para no perder enlaces sin metadatos.
   - `SKIP_TARGETS`: youtube, youtu.be, plustream, cinestart., okru.cx, ok.ru, vk.com, facebook, instagram, tiktok, t.me, telegram.
+- Idiomas en la ficha: `LoadResponse` no tiene campo propio, así que se añaden como etiquetas en `tags` (después de los géneros) con `availableLanguages()`, que descarta las claves de `videos` sin ningún servidor utilizable (el sitio las lista vacías). Aplica a películas y a la ficha de episodio.
 - Dood, StreamWish, VidHide y Vidara **no** se reimplementan: ya existen en el jar (`DoodstreamCom`, `StreamWishExtractor`, `VidHidePro`; `Vidara` ya hace POST a `/api/stream`).
 - VoE sí tiene extractor propio porque el `Voe` del jar no resuelve la puerta altcha actual.
 
@@ -97,4 +99,5 @@ Decisiones de implementación:
 ## Limitaciones conocidas
 
 - No hay runtime Android en esta máquina: la reproducción dentro de la app no está verificada.
+- En la ficha de **serie** no se pueden mostrar idiomas: `thisSerie` no trae `videos` y los episodios solo dan título/número/fecha/slug, así que habría que pedir una página de episodio aparte.
 - Un `keyPrefix` de 3–4 hex puede agotar el presupuesto de tiempo del solver; el presupuesto actual (20 s, 4 hilos) cubre el prefijo real de 2 hex.
