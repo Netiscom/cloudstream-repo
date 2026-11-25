@@ -83,7 +83,7 @@ Decisiones de implementación:
 - PBKDF2 hecho a mano ≈ 29.8 ms/intento en JVM, así que el PoW se resuelve **en paralelo** (4 hilos, `ExecutorService`, presupuesto ~20 s). Medido en vivo: 0.9–3.5 s por challenge.
 - Se comprobó paridad exacta con la implementación de referencia: mismo `counter`, mismo `derivedKey` (`5ec02b91…0522b`), mismo `source` tras descifrar.
 - `AresHDPlugin.kt` registra `VoeAltcha()` y sus mirrors; se eliminaron los antiguos `VoeMirrorCasey`/`VoeMirrorMorencius` y el import de `Voe`.
-- Subtítulos: el reproductor del espejo (`/js/loader*.js`) recorre `sources[0].captions` y exige `file` en cada entrada, añadiendo `kind` (`"captions"` por defecto) y `default`. `VoeCaption` acepta `file`/`url` y etiqueta en `label`/`language`/`lang`; se ignoran `kind` distintos de `captions`/`subtitles` y se resuelven las rutas relativas contra el origen del espejo.
+- Subtítulos: el reproductor del espejo (`/js/loader*.js`) recorre `sources[0].captions` y exige `file` **y** `language` en cada entrada, añadiendo `kind` (`"captions"` por defecto) y `default`. Esquema confirmado descifrando el array ofuscado del loader (índice `0x1d5` → `language`, `0x1d9` → `kind`, `0x1b1` → `default`, `0x1ec` → `default_captions_language`). `VoeCaption` acepta `file`/`url` y etiqueta en `label`/`language`/`lang`; se ignoran `kind` distintos de `captions`/`subtitles` y se resuelven las rutas relativas contra el origen del espejo.
 
 ## Cómo se validó (sin dispositivo Android)
 
@@ -94,7 +94,7 @@ Decisiones de implementación:
 ## Pendiente / próximos pasos
 
 1. Probar en dispositivo: instalar el `.cs3` y resolver VoE/Dood/StreamWish de verdad.
-2. ~~Subtítulos de VoE~~ **Hecho** en v4: `emitSubtitles()` lee `captions` del config. Ojo: en 16 vídeos muestreados el campo venía vacío (`[]`), así que el camino con datos reales está sin verificar.
+2. ~~Subtítulos de VoE~~ **Hecho** en v4: `emitSubtitles()` lee `captions` del config. Muestreo amplio (258 configs de películas + 116 de episodios, más ~150 previos): `captions` siempre `[]`, así que AresHD no parece subir subtítulos a VoE y el camino con datos reales sigue sin verse. El config sí trae `default_captions_language` (p. ej. `"sq"`), pero es un resto de la plantilla del host. Muchos enlaces VoE de episodios ya están borrados (404 en `/e/<código>`), no es fallo del extractor.
 3. ~~Placeholders y publicación~~ **Hecho**: `setRepo` y `repo.json` apuntan a `Netiscom/cloudstream-repo`, con ramas `main`/`builds` y workflow en verde.
 4. ~~Commit~~ **Hecho**: el trabajo está commiteado y publicado en `main`.
 
