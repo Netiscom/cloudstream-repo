@@ -7,6 +7,20 @@ Repositorio de extensiones para **Cloudstream 3** adaptado a partir de los canal
 - **AresHD** (`AresHD/`): Películas, series, búsqueda, géneros y resolución de enlaces vía `#__NEXT_DATA__` + `player.areshd.com` + extractores integrados de Cloudstream (`Voe`, `Dood`, `StreamWish`, `VidHide`, `Vidara`).
 - **VoE con altcha** (`VoeAltcha.kt`): los espejos de VoE (voe.sx, caseyemavoid.com, morencius.com) sirven una verificación «Confirm you're human» con challenge altcha (PBKDF2/SHA-256). El extractor resuelve el proof-of-work en paralelo y descifra el config ofuscado, igual que el addon de Kodi.
 
+## Cómo instalarlo (usuarios finales)
+
+1. Instala la app **Cloudstream 3** (estable o pre-release).
+2. Abre **Ajustes → Extensiones → Añadir repositorio**.
+3. Pega la URL del repositorio y pulsa **Añadir**:
+   - URL: `https://raw.githubusercontent.com/Netiscom/cloudstream-repo/main/repo.json`
+   - O enlace directo (abre Cloudstream automáticamente): `cloudstreamrepo://raw.githubusercontent.com/Netiscom/cloudstream-repo/main/repo.json`
+4. Pulsa **Abrir repositorio** y descarga la extensión **AresHD**.
+5. Vuelve a **Inicio** y selecciona **AresHD** en el desplegable de la esquina inferior derecha.
+
+El repositorio se llama "Kodi Scrapers (Cloudstream)" y la extensión aparece como **AresHD** (v4, idioma `es`).
+
+> Si tu operador bloquea `raw.githubusercontent.com`, usa una VPN o el enlace directo `cloudstreamrepo://`.
+
 ## Cómo compilar localmente (Windows)
 
 ```powershell
